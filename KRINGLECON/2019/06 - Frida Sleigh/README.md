@@ -157,8 +157,7 @@ If you have gotten this far, great! All we need to do now is to put everything t
 In order to do this, I made some modifications to the `predict_images_using_trained_model.py` and saved them in `predict_images_using_trained_model_edited.py`, bearing in mind that the thing we are interested in if we are successful is the final session cookie.
 
 The main edits are:
-1. ```
-def get_images():
+1. ```def get_images():
     req = 'https://fridosleigh.com/api/capteha/request'
     res = requests.post(req)
     cookie = res.headers['Set-Cookie'].split(';')[0]
@@ -173,8 +172,7 @@ def get_images():
     mask = re.compile(pattern)
     return list(mask.findall(s)[0]), cookie
 ```
-2. ```
-def send_answer(answers, headers):
+2. ```def send_answer(answers, headers):
     req = 'https://fridosleigh.com/api/capteha/submit'
     body = 'answer=%s' % '%2C'.join(answers)
     print(body)
