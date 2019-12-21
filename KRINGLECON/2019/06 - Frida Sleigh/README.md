@@ -157,7 +157,9 @@ If you have gotten this far, great! All we need to do now is to put everything t
 In order to do this, I made some modifications to the `predict_images_using_trained_model.py` and saved them in `predict_images_using_trained_model_edited.py`, bearing in mind that the thing we are interested in if we are successful is the final session cookie.
 
 The main edits are:
-1. `def get_images():
+1. 
+```
+def get_images():
     req = 'https://fridosleigh.com/api/capteha/request'
     res = requests.post(req)
     cookie = res.headers['Set-Cookie'].split(';')[0]
@@ -170,14 +172,18 @@ The main edits are:
     import re
     pattern = r'^([\w\s]+), ([\w\s]+), and ([\w\s]+)$'
     mask = re.compile(pattern)
-    return list(mask.findall(s)[0]), cookie`
-2. `def send_answer(answers, headers):
+    return list(mask.findall(s)[0]), cookie
+```
+2. 
+```
+def send_answer(answers, headers):
     req = 'https://fridosleigh.com/api/capteha/submit'
     body = 'answer=%s' % '%2C'.join(answers)
     print(body)
     res = requests.post(req, data=body, headers=headers)
     print(res.content)
-    print(res.headers['Set-Cookie'].split(';')[0])`
+    print(res.headers['Set-Cookie'].split(';')[0])
+```
 3. We added `tags, cookie = get_images()` to the beginning of `main()` to grab the new unknown images.
 4. Instead of printing out the predicted labels, we save the list of `uuid` we are interested in to `answers` using `answers = [i['img_full_path'].split('/')[-1].split('.')[0] for i in prediction_results if i['prediction'] in tags]`.
 5. We then pass `answers` and `headers` (which contains the `cookie` from the server response in `get_images()` and the necessary `Content-Type` for the server to accept our request) to `send_answer` by adding the line `send_answer(answers, headers)`
