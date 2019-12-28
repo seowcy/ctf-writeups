@@ -169,6 +169,8 @@ So there are only 2 columns. We are interested in `path` as it should tell us wh
 
 `sqlmap` is a really fantastic tool for dumping a database, once you've managed to get it to the injection point. That is easier said than done for this challenge. The hint that is given for this challenge was to use tamper scripts to deal with the token parameter. We already know that the token comes from making a GET request to `validator.php`, and we simply want to have `sqlmap` use that for the `token` parameter while it does its testing. My experience with trying to do this was not that successful, so I turned to `burp` instead.
 
+_Addendum: Someone pointed out that we can use `--eval` to not need burp to handle the token. You can find how to use `--eval` to solve this challenge <a href='#addendum-using---eval'>here</a>. To learn more about `--eval`, click <a href='http://aetherlab.net/2014/07/advanced-sqlmap-features-eval/'>here</a>_
+
 ### Dealing With The Token Using Burp Macros
 
 `burp` is another great penetration testing tool that allows you to intercept your web requests and easily modify them. It also captures your HTTP history, which is very helpful for looking at what goes on behind the browser as you explore a site. Burp isn't the easiest tool to figure out on your own, but it is definitely worth your while to get started with it. Of all the tools burp provides, I recommend starting with learning how to use the `repeater` tool, which is the tool I most frequently use to adjust small parts of my web requests and see how the server responses change.
@@ -270,6 +272,15 @@ back-end DBMS: MySQL >= 5.0
 [19:46:07] [INFO] fetched data logged to text files under '/home/user/.sqlmap/output/studentportal.elfu.org'
 
 [*] ending @ 19:46:07 /2019-12-27/
+```
+
+### Addendum: Using `--eval`
+
+Someone pointed out to me that `sqlmap` has an `--eval` function that allows you to run any python code before `sqlmap` does its injection. Out of all the methods I have tried for this challenge, this was by far the most straightforward and powerful way that I have picked up. The command below includes the python script for grabbing the token from `validator.php` and saving it to the `token` variable. Apparently this can be done as `sqlmap` saves all request parameters with the same variable name, allowing us to access and modify each of them using `--eval`.
+
+```
+$ sqlmap -u "https://studentportal.elfu.org/application-check.php?elfmail=asdfg&token=asdfg" -p elfmail --risk 3 --dbms MySQL --threads 10 --eval "import requests;token=requests.get('http://studentportal.elfu.org/valid
+ator.php').content.decode('utf-8');"
 ```
 
 ### Dumping Only The Interesting Parts Of The Database
